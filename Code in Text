@@ -326,6 +326,16 @@ F_load = min(FOSES) * P
 % legend('Matboard Shear Failure')
 % xlabel('Distance along bridge (mm)')
 % ylabel('Shear Force (N)')
+%% 9. Output plos of Vfail and Mfail
+% subplot(2,3,1)
+% hold on; grid on; grid minor;
+% plot(x, Vf_shear, 'r')
+% plot(x, -Vf_shear.* SFD, 'r')
+% plot(x, SFDi, 'k');
+% plot([0, L], [0, 0], 'k', 'LineWidth', 2)
+% legend('Matboard Shear Failure')
+% xlabel('Distance along bridge (mm)')
+% ylabel('Shear Force (N)')
 
 subplot(2, 3, 1)
 plot(SF_env_max,"black")
@@ -335,11 +345,38 @@ title("Shear Force vs Shear Force failure")
 legend("Shear forces", "Failure shear force")
 hold off
 subplot(2,3,2)
-plot(BM_env_max,"black")
-title("Max BM")
+plot(SF_env_max,"black")
+title("SF vs Glue shear failure")
 hold on
-yline(M_fail_min, "red")
-legend("Bending moments", "Failure bending moment")
+yline(Vf_glue, "red")
+legend("SF", "Glue shear failure SF")
+subplot(2,3,3)
+plot(SF_env_max,"black")
+title("SF vs Shear Buckling")
+hold on
+yline(Vf_buckV, "red")
+legend("SF", "Shear Buckling")
+subplot(2,3,4)
+plot(BM_env_max,"black")
+title("BM vs ten/comp failure")
+hold on
+yline(Mf_comp, "red")
+yline(Mf_tens, "red")
+legend("Bending Moment", "Compression Failure","tension Failure")
+subplot(2,3,5)
+plot(BM_env_max,"black")
+title("BM vs Top flendge failure")
+hold on
+yline(Mf_buck1, "red")
+yline(Mf_buck2, "red")
+legend("Bending Moment", "Top fldenge mid local buckling","Top fldenge sides local buckling")
+subplot(2,3,6)
+plot(BM_env_max,"black")
+title("BM vs web failure")
+hold on
+yline(Mf_buck3, "red")
+legend("Bending Moment", "web buckling failure")
+
 
 %6. Functions used
 function Iy = I_1(yAxisValue)
