@@ -13,8 +13,8 @@ clc
 clear
 %% 0. Initialize Parameters DO NOT CHANGE
 %%_________________________________
-n = 1200;               
-L = 1200;
+n = 1251;               
+L = 1251;
 P = 400
 x = zeros(1, L+1);
 for i =1:L
@@ -22,11 +22,11 @@ x(i)=i;
 end
 wheels = [-52 -228 -392 -568 -732 -908];
 %1.SFD,BMD  %change this for the load
-Pwagon=400/6;
-Ploco=400/6;
-SF_env=zeros(1200);
-BM_env=zeros(1200);
-for i = 1:1200 %should be 1:1200
+Pwagon=133.3/2;
+Ploco=90;
+SF_env=zeros(1251);
+BM_env=zeros(1251);
+for i = 1:1251 %should be 1:1251
   if i~=176 && i~=340 && i~=516 && i~=680 && i ~= 856
 locWheel=wheels+52+i;
 load=[Ploco,Ploco,Pwagon,Pwagon,Pwagon,Pwagon];
@@ -40,22 +40,19 @@ for k = 1:1:6
 end
 RFend=sum(onbriload.*onbriwheel)/L;
 RFstart=sum(onbriload)-RFend;
-SF=ones(1,1200);
+SF=ones(1,1251);
 SF=SF.*RFstart;
 for j = 6:-1:1
     if onbriwheel(j)~=0
-        SF(locWheel(j):1200)=SF(locWheel(j))-onbriload(j);
+        SF(locWheel(j):1251)=SF(locWheel(j))-onbriload(j);
     end
  end
 if SF(153)<235 && SF(1000)<1500
-BM=zeros(1,1200);
-for o = 1:1200
+BM=zeros(1,1251);
+for o = 1:1251
     BM(o)=sum(SF(1:o));
-%I FOUND THAT SOMEHOW, MY DATA ARE MORE THAN THE ACTUAL BY .08
-%CONSIDER THIS AS A CORRECTION FACTOR?
-%A MORE RESONABLE EXPLAINATION IS THAT THE ERROR IS CAUSED BY THE SLIGHT
-%DIFFERENCE  IN THE SF CALCULATED BY APPROX AND ACTUAL SF.  MY ALGOTHRITHM
-%PRODUCES THIS MUCH ERROR
+%%__________________-
+%%plots SF and ABS value of SF
 end
 subplot(5,1,1)
 plot(SF,"b")
@@ -65,6 +62,7 @@ subplot(5,1,2)
 plot(ABSSF,"b")
 hold on
 %%_________________________
+%% received help in the following lines from Chat GPT
 %THX Chat GPT
 SF_env(:,i) = SF; % Assigns the entire SF vector to the i-th column of SF_env
 %BM_env(:,i) = BM; % Assigns the entire BM vector to the i-th column of BM_env
@@ -74,7 +72,7 @@ end
 end
 title(subplot(5,1,1),"SFD")
 title(subplot(5,1,2),"SFD-ABS")
-for i = 1:1200 %should be 1:1200
+for i = 1:1251 %should be 1:1251
 %176,340
 if i~=176 && i~=340 && i~=516 && i~=680 && i ~= 856
 locWheel=wheels+52+i;
@@ -89,24 +87,27 @@ for k = 1:1:6
 end
 RFend=sum(onbriload.*onbriwheel)/L;
 RFstart=sum(onbriload)-RFend;
-SF=ones(1,1200);
+SF=ones(1,1251);
 SF=SF.*RFstart;
 for j = 6:-1:1
     if onbriwheel(j)~=0
-        SF(locWheel(j):1200)=SF(locWheel(j))-onbriload(j);
+        SF(locWheel(j):1251)=SF(locWheel(j))-onbriload(j);
     end
  end
 if SF(153)<225
-BM=zeros(1,1200);
-for o = 1:1200
+BM=zeros(1,1251);
+for o = 1:1251
     BM(o)=sum(SF(1:o));
 end
+%%_____________
+%plot BMD
 subplot(5,1,3)
 plot(BM,"r")
 ABSSF=abs(SF);
 %plot(ABSSF,"b")
 hold on
 %%_________________________
+%received help in the following lines from Chat GPT
 %THX Chat GPT
 SF_env(:,i) = ABSSF; % Assigns the entire SF vector to the i-th column of SF_env
 BM_env(:,i) = BM; % Assigns the entire BM vector to the i-th column of BM_env
@@ -116,9 +117,9 @@ end
 end
 SF_env
 BM_env;
-SF_env_max=zeros(1,1200);
-BM_env_max=zeros(1,1200);
-for i = 1:1200
+SF_env_max=zeros(1,1251);
+BM_env_max=zeros(1,1251);
+for i = 1:1251
 SF_env_max(i)=max(SF_env(i,:));
 BM_env_max(i)=max(BM_env(i,:));
 end
@@ -130,8 +131,8 @@ title(subplot(5,1,3),"BMD")
 
 
 SF_BM_max_loc=[0 0;0 0]
-for i = 1:1200
-  for j = 1:1200
+for i = 1:1251
+  for j = 1:1251
       if SF_env(i,j)==SF_TL_max
           SF_BM_max_loc(1,:)=[i,j]
       end
@@ -140,8 +141,12 @@ for i = 1:1200
       end
   end
 end
+%%Gives   [train location when SF max, SF max Location
+%%         train location when BM max, BM max Location] 
 
 
+
+%%Plots envelop of Sheer force and Bending moment
 subplot(5,1,4)
 plot(SF_env_max,"black")
 title("Max ABSSF")
@@ -152,7 +157,7 @@ BM_env(580,1097)
 
 
 
-
+clf
 
 %2. Define Bridge Parameters
 % define parameters
@@ -165,11 +170,13 @@ BM_env(580,1097)
 SF_TL_max = 200;
 
 
-x1=[10 10 0 0 100 100 90 90]
-y1=[0 75 75 76.27 76.27 75 75 0]
-x2=[11.27 11.27 16.27 16.27 83.73 83.73 88.73 88.73]
-y2=[1.27 73.73 73.73 75 75 73.73 73.73 1.27]
-xshape=polyshape({x1,x2}, {y1,y2})
+x1=[10 10 0 0 85 85 75 75]
+y1=[0 75 75 77.54 77.54 75 75 0]
+x2=[11.27 11.27 16.27 16.27 41.685 41.685 11.27 ]
+y2=[1.27 73.73 73.73 75 75 1.27 1.27]
+x3=[42.955 42.955  68.73 68.73 73.73 73.73]
+y3=[1.27 75  75 73.73 73.73 1.27]
+xshape=polyshape({x1,x2,x3}, {y1,y2,y3})
 plot(xshape)
 
 
@@ -183,7 +190,7 @@ xarea = area(xshape);
 yAxisValue = ybar
 I1 = I_1(yAxisValue) % find I for the outer shape
 I2 = I_2(yAxisValue) % find I for the inner shape
-I = I1 - I2 % total I
+I = I1 - 2*I2 % total I
 
 
 % Calculate shear stress, use area below the y bar
@@ -270,6 +277,8 @@ S_buck2 = (0.425 * pi^2 * E / (12*(1 - mu^2))) *(t_buck2/b_buck2)^2
 t_buck3 = 1.27*2 % twice the thickness of web
 b_buck3 = 75-41.4 % length of the web above ybar
 S_buck3 =(6 * pi^2 * E / (12*(1 - mu^2))) *(t_buck3/b_buck3)^2
+%% This is werid, but it fits with the manuel calculation
+%so Just keep it here
 
 
 T_buck_t = 1.27 % thickness
@@ -379,13 +388,14 @@ legend("Bending Moment", "web buckling failure")
 
 
 %6. Functions used
+
 function Iy = I_1(yAxisValue)
   % This function calculates the second moment of area of an "I" shaped polyshape
   % about a horizontal axis at y = yAxisValue.
    % Segment 1: Top Flange (10, 76.27) to (100, 76.27)
-  width1 = 100;  % Width of the top flange
-  height1 = 1.27; % Height of the top flange
-  centroidY1 = 75 + 1.27/2; % Centroid Y of the top flange
+  width1 = 75;  % Width of the top flange
+  height1 = 1.27*2; % Height of the top flange
+  centroidY1 = 80 - 1.27/2; % Centroid Y of the top flange
   dY1 = abs(centroidY1 - yAxisValue); % Distance from axis to centroid
   Iy1 = (width1 * height1^3 / 12) + (width1 * height1 * dY1^2); % Second moment of area of the top flange
 
@@ -393,9 +403,9 @@ function Iy = I_1(yAxisValue)
 
 
   % Segment 2: Bottom Flange (10, 0) to (100, 0)
-  width2 = 80;  % Width of the bottom flange
-  height2 = 75 ; % Height of the bottom flange
-  centroidY2 = 75/2; % Centroid Y of the bottom flange
+  width2 = 65;  % Width of the bottom flange
+  height2 = 80 ; % Height of the bottom flange
+  centroidY2 = 80/2; % Centroid Y of the bottom flange
   dY2 = abs(centroidY2 - yAxisValue); % Distance from axis to centroid
   Iy2 = (width2 * height2^3 / 12) + (width2 * height2 * dY2^2); % Second moment of area of the bottom flange
 
@@ -421,7 +431,7 @@ function Iy = I_2(yAxisValue)
 
 
   % Segment 2: Bottom Flange (11.27, 0) to (88.73, 0)
-  width2 = 88.73 - 11.27;  % Width of the bottom flange
+  width2 = (88.73 - 11.27-1.27)/2;  % Width of the bottom flange
   height2 = 75-2*1.27; % Height of the bottom flange
   centroidY2 = (75) / 2; % Centroid Y of the bottom flange
   dY2 = abs(centroidY2 - yAxisValue); % Distance from axis to centroid
@@ -433,6 +443,3 @@ function Iy = I_2(yAxisValue)
   % Sum the moments of all segments
   Iy = Iy1 + Iy2;
 end
-
-
-
